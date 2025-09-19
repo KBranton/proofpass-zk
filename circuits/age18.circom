@@ -1,4 +1,4 @@
-pragma circom 2.0.0;
+pragma circom 2.0.0
 
 // Simple age >= 18 circuit
 // Input: date of birth (as days since 1970)
