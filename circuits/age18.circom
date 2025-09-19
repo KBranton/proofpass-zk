@@ -1,9 +1,4 @@
-pragma circom 2.0.0
-
-// Simple age >= 18 circuit
-// Input: date of birth (as days since 1970)
-// Public Input: today's date (as days since 1970)
-// Output: 1 if (today - dob >= 18*365), else 0
+include "circomlib/circuits/comparators.circom";
 
 template AgeCheck() {
     // Private input (kept hidden)
@@ -12,18 +7,23 @@ template AgeCheck() {
     // Public input (verifier knows today)
     signal input today;
 
-    // Output: isOver18
+    // Output: 1 if age >= 18, else 0
     signal output isOver18;
 
-    // Compute difference in days
+    // Compute day difference
     signal diff;
     diff <== today - dob;
 
-    // Minimum days = 18 years (ignoring leap years here: 18*365)
+    // 18 years ≈ 6570 days (ignoring leap years for now)
     var minDays = 6570;
 
-    // If diff >= minDays, output 1 else 0
-    isOver18 <== (diff >= minDays);
+    // isOver18 = 1 - (minDays < diff ? 1 : 0)
+    // i.e., isOver18 = 1 when diff >= minDays
+    component lt = LessThan(32);
+    lt.in[0] <== minDays;  // a
+    lt.in[1] <== diff;     // b
+
+    isOver18 <== 1 - lt.out;
 }
 
 component main = AgeCheck();
